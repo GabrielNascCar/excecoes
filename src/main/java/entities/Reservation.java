@@ -1,5 +1,7 @@
 package entities;
 
+import exceptions.DomainException;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,7 +17,14 @@ public class Reservation {
 
     public Reservation() {}
 
-    public Reservation(Integer rooNUmber, Date checkin, Date checkout) {
+    public Reservation(Integer rooNUmber, Date checkin, Date checkout) throws DomainException {
+        Date now = new Date();
+        if(checkin.before(now) || checkout.before(now)) {
+            throw new DomainException("Reservation dates for update must be after check-in date");
+        }
+        if(!checkout.after(checkin)){
+            throw new DomainException("Check-out date must be after check-in date");
+        }
         this.rooNUmber = rooNUmber;
         this.checkin = checkin;
         this.checkout = checkout;
@@ -42,18 +51,16 @@ public class Reservation {
         return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
     }
 
-    public String updateDates(Date checkin, Date checkout) {
+    public void updateDates(Date checkin, Date checkout) throws DomainException {
         Date now = new Date();
         if(checkin.before(now) || checkout.before(now)) {
-            return "Reservation dates for update must be after check-in date";
+            throw new DomainException("Reservation dates for update must be after check-in date");
         }
         if(!checkout.after(checkin)){
-            return "Check-out date must be after check-in date";
+            throw new DomainException("Check-out date must be after check-in date");
         }
-
         this.checkin = checkin;
         this.checkout = checkout;
-        return null;
     }
 
     @Override
